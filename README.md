@@ -1,6 +1,8 @@
 # briGITte
 Git viewer inspired by gitg
 
+![Screenshot](/img/screenshot/horizontal_flow.png?raw=true)
+
 # Installation
 
 1. Get the sources, e.g.:

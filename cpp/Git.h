@@ -14,7 +14,7 @@ struct Commit
     QVector<int> parents;
     /// For visualization: number (left-to-right) of the branch of the active branches
     /// this commit is in
-    int activeBranchIndex = 0;
+    int branchIndex = 0;
 };
 
 class Git

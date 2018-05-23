@@ -319,12 +319,24 @@ Window {
                     }
 
                     Row {
-                        anchors.fill: parent
+                        anchors { fill: parent; leftMargin: 5; rightMargin: 5 }
+
+                        spacing: 2
+
+                        Rectangle {
+                            anchors { verticalCenter: parent.verticalCenter }
+                            width:  canvas.circleWidth
+                            height: canvas.circleWidth
+                            radius: 0.5*canvas.circleWidth
+
+                            color: canvas.getColor(branchindex);
+                        }
 
                         Text {
                             text: message.split('\n')[0]
-                            width: parent.width - 75
+                            width: parent.width - 75 - canvas.circleWidth - 4
                             height: parent.height
+                            leftPadding: 2
                             clip: true
                             color: settings.fontColor
                             verticalAlignment: Text.AlignVCenter

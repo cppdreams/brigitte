@@ -11,7 +11,7 @@ class Commits : public QAbstractListModel
 Q_OBJECT
 
 public slots:
-    int getActiveBranchIndex(int row) const;
+    int getBranchIndex(int row) const;
     QVector<int> getParents(int row) const;
     QVector<int> getChildren(int row) const;
 
@@ -27,7 +27,7 @@ public:
         ShaRole = Qt::UserRole + 1,
         ShortShaRole,
         MessageRole,
-        ActiveBranchIndexRole,
+        BranchIndexRole,
         ChildrenRole,
         ParentsRole,
         SelectionRole

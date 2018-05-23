@@ -7,9 +7,9 @@
 using namespace std;
 
 
-int Commits::getActiveBranchIndex(int row) const
+int Commits::getBranchIndex(int row) const
 {
-    return m_commits[row].activeBranchIndex;
+    return m_commits[row].branchIndex;
 }
 
 QVector<int> Commits::getParents(int row) const
@@ -49,7 +49,7 @@ QVariant Commits::data(const QModelIndex &index, int role) const
     case ShaRole:      return m_commits[index.row()].sha;
     case ShortShaRole: return m_commits[index.row()].sha.left(7);
     case MessageRole:  return m_commits[index.row()].message;
-    case ActiveBranchIndexRole: return getActiveBranchIndex(index.row());
+    case BranchIndexRole: return getBranchIndex(index.row());
     case ChildrenRole: return QVariant::fromValue(getChildren(index.row()));
     case ParentsRole: return QVariant::fromValue(getParents(index.row()));
     case SelectionRole: return m_selected[index.row()];
@@ -66,6 +66,7 @@ QHash<int, QByteArray> Commits::roleNames() const
     roles[ShortShaRole] = "shortsha";
     roles[MessageRole]  = "message";
     roles[SelectionRole] = "selected";
+    roles[BranchIndexRole] = "branchindex";
 
     return roles;
 }
@@ -88,7 +89,7 @@ bool Commits::setData(const QModelIndex &index, const QVariant &value, int role)
 
 int FilteredCommits::getActiveBranchIndex(int row) const
 {
-    return data(index(row, 0), Commits::ActiveBranchIndexRole).toInt();
+    return data(index(row, 0), Commits::BranchIndexRole).toInt();
 }
 
 namespace
@@ -156,7 +157,7 @@ void FilteredCommits::filterOnBranch(int row)
         icurrent = -1;
 
         for (int parent : parents){
-            if (sourceModel()->data(sourceModel()->index(parent, 0), Commits::ActiveBranchIndexRole) == branchIndex){
+            if (sourceModel()->data(sourceModel()->index(parent, 0), Commits::BranchIndexRole) == branchIndex){
                 // Continue if parent is on the same branch
                 icurrent = parent;
                 break;
@@ -173,7 +174,7 @@ void FilteredCommits::filterOnBranch(int row)
         icurrent = -1;
 
         for (int child : children){
-            if (sourceModel()->data(sourceModel()->index(child, 0), Commits::ActiveBranchIndexRole) == branchIndex){
+            if (sourceModel()->data(sourceModel()->index(child, 0), Commits::BranchIndexRole) == branchIndex){
                 icurrent = child;
                 break;
             }

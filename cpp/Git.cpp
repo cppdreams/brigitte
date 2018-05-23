@@ -114,7 +114,7 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
         }
 
 
-        size_t activeBranchIndex = activeBranches.size();
+        size_t branchIndex = activeBranches.size();
         for (size_t i = 0; i < activeBranches.size();){
             // Does this work, because we free commit pointers... maybe have to compare sha or oid instead?
             if (c == activeBranches[i].nextCommit){
@@ -123,8 +123,8 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
 
                 activeBranches[i].index = commitIndex;
 
-                if (activeBranchIndex == activeBranches.size()){
-                    activeBranchIndex = i;
+                if (branchIndex == activeBranches.size()){
+                    branchIndex = i;
                     ++i;
                 } else {
                     activeBranches.erase(activeBranches.begin() + i);
@@ -136,11 +136,11 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
 
         if (activeBranches.empty()){
             activeBranches.emplace_back(LastCommitData{0, c});
-        } else if (activeBranchIndex == activeBranches.size()){
+        } else if (branchIndex == activeBranches.size()){
             cerr << "unable to find active branch index" << endl;
             return{};
         } else {
-            commits.back().activeBranchIndex = activeBranchIndex;
+            commits.back().branchIndex = branchIndex;
         }
 
         if (nparents > 1){
@@ -162,8 +162,8 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
                 return {};
             }
 
-            activeBranches[activeBranchIndex].nextCommit = parent;
-            activeBranches[activeBranchIndex].index = commitIndex;
+            activeBranches[branchIndex].nextCommit = parent;
+            activeBranches[branchIndex].index = commitIndex;
 
             git_commit_free(parent);
         }

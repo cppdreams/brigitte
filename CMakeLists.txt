@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(gitlook LANGUAGES CXX)
+project(brigitte LANGUAGES CXX)
 
 include(ExternalProject)
 

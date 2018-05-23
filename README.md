@@ -16,6 +16,7 @@ cd ..
 mkdir build
 cd build
 cmake ../brigitte
+make -j 8
 ```
 
 3. Set up config.yaml, e.g.:

@@ -22,7 +22,7 @@ make -j 8
 3. Set up config.yaml, e.g.:
 
 ```
-cp ../brigitte/config.yaml .
+cp ../brigitte/config.yaml.template config.yaml
 # Now edit config.yaml, listing projects you want to view
 ```
 

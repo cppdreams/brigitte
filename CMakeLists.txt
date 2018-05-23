@@ -34,6 +34,7 @@ add_executable(${PROJECT_NAME}
     "cpp/Commits.cpp"
     "cpp/Git.cpp"
     "cpp/Settings.cpp"
+    "cpp/Projects.cpp"
     "qml.qrc")
 
 include_directories(cpp ${YAML_CPP_INCLUDE_DIR})

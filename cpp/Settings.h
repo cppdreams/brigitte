@@ -2,4 +2,6 @@
 
 #include <QString>
 
-QString loadProjectPath();
+#include "Projects.h"
+
+std::vector<Project> loadProjects();

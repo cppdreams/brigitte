@@ -1,3 +1,8 @@
-project:
-    path: "path-to-git-repository"
-    
+projects:
+    - name: project_1
+      path: "project_1_path"
+    - name: project_2
+      path: "project_2_path"
+    - name: project_3
+      path: "project_3_path"
+     

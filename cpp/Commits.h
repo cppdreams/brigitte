@@ -15,6 +15,8 @@ public slots:
     QVector<int> getParents(int row) const;
     QVector<int> getChildren(int row) const;
 
+    void loadFrom(QString path);
+
 public:
     void reset(std::vector<Commit> commits);
 
@@ -36,8 +38,9 @@ public:
     };
 
 private:
+    Git m_git;
     std::vector<char>   m_selected;
-    std::vector<Commit> m_commits;    
+    std::vector<Commit> m_commits;
 };
 
 class FilteredCommits : public QSortFilterProxyModel

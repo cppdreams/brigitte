@@ -52,6 +52,10 @@ Window {
                     onLayoutChanged: {
                         canvas.requestPaint();
                     }
+
+                    onModelReset: {
+                        canvas.requestPaint();
+                    }
                 }
 
                 function getColor(column){
@@ -411,5 +415,9 @@ Window {
                 }
             }
         }
+    }
+
+    ProjectList {
+        anchors.fill: parent
     }
 }

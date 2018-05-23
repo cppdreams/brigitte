@@ -85,8 +85,8 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
 
     struct LastCommitData
     {
-        size_t      index;
-        git_commit* nextCommit;
+        git_oid nextCommit;
+        size_t  index;
     };
 
     vector<Commit> commits;
@@ -97,10 +97,8 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
         if (! check_error(git_commit_lookup(&c, repo, &oid))){
             return {};
         }
-//        cout << oidstr << " " << git_commit_message(c);
 
         auto nparents = git_commit_parentcount(c);
-        // append commit here
 
         size_t commitIndex = commits.size();
         {
@@ -120,8 +118,7 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
 
         size_t branchIndex = activeBranches.size();
         for (size_t i = 0; i < activeBranches.size();){
-            // Does this work, because we free commit pointers... maybe have to compare sha or oid instead?
-            if (c == activeBranches[i].nextCommit){
+            if (git_oid_equal(&oid, &activeBranches[i].nextCommit)){
                 commits.back().children.push_back(activeBranches[i].index);
                 commits[activeBranches[i].index].parents.push_back(commitIndex);
 
@@ -139,10 +136,10 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
         }
 
         if (activeBranches.empty()){
-            activeBranches.emplace_back(LastCommitData{0, c});
+            activeBranches.emplace_back(LastCommitData{oid, 0});
         } else if (branchIndex == activeBranches.size()){
-            cerr << "unable to find active branch index" << endl;
-            return{};
+            cerr << "Unable to find active branch index " << branchIndex << endl
+                 << "i: " << commitIndex << " activeBranches: " << activeBranches.size() << endl;
         } else {
             commits.back().branchIndex = branchIndex;
         }
@@ -153,8 +150,11 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
                 if (! check_error(git_commit_parent(&parent, c, i))){
                     return {};
                 }
-                activeBranches.emplace_back(LastCommitData{commitIndex,
-                                                           parent});
+
+                const git_oid* parentId = git_commit_id(parent);
+
+                activeBranches.emplace_back(LastCommitData{*parentId,
+                                                           commitIndex});
                 git_commit_free(parent);
             }
         }
@@ -166,7 +166,9 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
                 return {};
             }
 
-            activeBranches[branchIndex].nextCommit = parent;
+            const git_oid* parentId = git_commit_id(parent);
+
+            activeBranches[branchIndex].nextCommit = *parentId;
             activeBranches[branchIndex].index = commitIndex;
 
             git_commit_free(parent);

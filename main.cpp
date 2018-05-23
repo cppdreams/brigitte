@@ -13,10 +13,10 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    Git git;
+    ProjectList projects;
+    projects.reset(loadProjects());
 
     Commits commits;
-    commits.reset(git.readCommits(loadProjectPath()));
 
     FilteredCommits filteredCommits;
     filteredCommits.setSourceModel(&commits);
@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    engine.rootContext()->setContextProperty("cpp_allcommits", &commits);
     engine.rootContext()->setContextProperty("cpp_commits", &filteredCommits);
+    engine.rootContext()->setContextProperty("cpp_projects", &projects);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

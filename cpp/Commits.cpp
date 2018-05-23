@@ -22,6 +22,11 @@ QVector<int> Commits::getChildren(int row) const
     return m_commits[row].children;
 }
 
+void Commits::loadFrom(QString path)
+{
+    reset(m_git.readCommits(path));
+}
+
 void Commits::reset(std::vector<Commit> commits)
 {
     beginResetModel();

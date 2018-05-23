@@ -3,6 +3,7 @@
 #include <QString>
 #include <QVector>
 #include <QDateTime>
+#include <QObject>
 
 struct Author
 {
@@ -31,8 +32,8 @@ public:
     Git();
     ~Git();
 
+    std::vector<Commit> readCommits(const QString& projectPath) const;
+
     Git(const Git& rhs) = delete;
     Git& operator=(const Git& rhs) = delete;
-
-    std::vector<Commit> readCommits(const QString& projectPath) const;
 };

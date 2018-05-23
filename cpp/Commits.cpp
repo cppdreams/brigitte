@@ -111,12 +111,12 @@ QVector<int> mapListFromSource(const QVector<int>& source, const QSortFilterProx
 
 QVector<int> FilteredCommits::getParents(int row) const
 {
-    return mapListFromSource(getParentsRaw(row), this);
+    return mapListFromSource(data(index(row, 0), Commits::ParentsRole).value<QVector<int>>(), this);
 }
 
 QVector<int> FilteredCommits::getChildren(int row) const
 {
-    return mapListFromSource(getChildrenRaw(row), this);
+    return mapListFromSource(data(index(row, 0), Commits::ChildrenRole).value<QVector<int>>(), this);
 }
 
 bool FilteredCommits::isSelected(int row) const
@@ -138,43 +138,43 @@ void FilteredCommits::filterOnBranch(int row)
     const int branchIndex = getActiveBranchIndex(row);
 
     auto makeVisible = [this](int sourceIndex){
-        for (int parent : getParentsRaw(sourceIndex)){
+        for (int parent : getSourceParents(sourceIndex)){
             m_visible[parent] = 1;
         }
 
-        for (int child : getChildrenRaw(sourceIndex)){
+        for (int child : getSourceChildren(sourceIndex)){
             m_visible[child] = 1;
         }
     };
 
-    int icurrent = row;
+    int icurrent = mapToSource(index(row, 0)).row();
     while (icurrent >= 0){
         makeVisible(icurrent);
 
         // Source model indices
-        auto parents = getParentsRaw(icurrent);
+        auto parents = getSourceParents(icurrent);
         icurrent = -1;
 
         for (int parent : parents){
             if (sourceModel()->data(sourceModel()->index(parent, 0), Commits::ActiveBranchIndexRole) == branchIndex){
                 // Continue if parent is on the same branch
-                icurrent = mapFromSource(sourceModel()->index(parent, 0)).row();
+                icurrent = parent;
                 break;
             }
         }
     }
 
-    icurrent = row;
+    icurrent = mapToSource(index(row, 0)).row();
     while (icurrent >= 0){
         makeVisible(icurrent);
 
         // Source model indices
-        auto children = getChildrenRaw(icurrent);
+        auto children = getSourceChildren(icurrent);
         icurrent = -1;
 
         for (int child : children){
             if (sourceModel()->data(sourceModel()->index(child, 0), Commits::ActiveBranchIndexRole) == branchIndex){
-                icurrent = mapFromSource(sourceModel()->index(child, 0)).row();
+                icurrent = child;
                 break;
             }
         }
@@ -212,12 +212,14 @@ int FilteredCommits::getSelectionRole() const
     return Commits::SelectionRole;
 }
 
-QVector<int> FilteredCommits::getParentsRaw(int row) const
+QVector<int> FilteredCommits::getSourceParents(int row) const
 {
-    return data(index(row, 0), Commits::ParentsRole).value<QVector<int>>();
+    return sourceModel()->data(sourceModel()->index(row, 0),
+                               Commits::ParentsRole).value<QVector<int>>();
 }
 
-QVector<int> FilteredCommits::getChildrenRaw(int row) const
+QVector<int> FilteredCommits::getSourceChildren(int row) const
 {
-    return data(index(row, 0), Commits::ChildrenRole).value<QVector<int>>();
+    return sourceModel()->data(sourceModel()->index(row, 0),
+                               Commits::ChildrenRole).value<QVector<int>>();
 }

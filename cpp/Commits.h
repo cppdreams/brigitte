@@ -60,8 +60,8 @@ public:
 
     int getSelectionRole() const;
 
-    QVector<int> getParentsRaw(int row) const;
-    QVector<int> getChildrenRaw(int row) const;
+    QVector<int> getSourceParents(int row) const;
+    QVector<int> getSourceChildren(int row) const;
 
 private:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;

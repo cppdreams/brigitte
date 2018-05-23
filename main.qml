@@ -8,7 +8,7 @@ Window {
     visible: true
     width: 1200
     height: 800
-    title: qsTr("gitlook")
+    title: qsTr("briGITte")
 
     readonly property int rowHeight: 20
     readonly property int branchColWidth: 15

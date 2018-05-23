@@ -160,21 +160,30 @@ Window {
 
                 property var lastCommitSelected;
 
+                function deselectLast(){
+                    if (lastCommitSelected >= 0){
+                        cpp_commits.setSelected(lastCommitSelected, false);
+                    }
+                }
+
                 onPositionChanged: {
                     var icommit = canvas.getCommitIndex(mouse.x);
                     if (cpp_commits.getActiveBranchIndex(icommit) === canvas.getBranchIndex(mouse.y)){
                         cpp_commits.setSelected(icommit, true);
 
-                        if (lastCommitSelected >= 0 && icommit !== lastCommitSelected){
-                            cpp_commits.setSelected(lastCommitSelected, false);
+                        if (icommit !== lastCommitSelected){
+                            deselectLast();
                         }
                         lastCommitSelected = icommit;
                     } else {
-                        if (lastCommitSelected){
-                            cpp_commits.setSelected(lastCommitSelected, false);
-                        }
-
+                        deselectLast();
                         lastCommitSelected = -1;
+                    }
+                }
+
+                onContainsMouseChanged: {
+                    if (! containsMouse){
+                        deselectLast();
                     }
                 }
             }

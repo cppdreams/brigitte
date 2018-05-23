@@ -26,5 +26,5 @@ public:
     Git(const Git& rhs) = delete;
     Git& operator=(const Git& rhs) = delete;
 
-    std::vector<Commit> readCommits() const;
+    std::vector<Commit> readCommits(const QString& projectPath) const;
 };

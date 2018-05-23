@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "Commits.h"
+#include "Settings.h"
+
 
 using namespace std;
 
@@ -14,7 +16,7 @@ int main(int argc, char *argv[])
     Git git;
 
     Commits commits;
-    commits.reset(git.readCommits());
+    commits.reset(git.readCommits(loadProjectPath()));
 
     FilteredCommits filteredCommits;
     filteredCommits.setSourceModel(&commits);

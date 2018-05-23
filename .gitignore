@@ -33,3 +33,7 @@
 
 # Custom
 CMakeLists.txt.user
+config.yaml
+*~
+yaml-cpp
+.gitmodules

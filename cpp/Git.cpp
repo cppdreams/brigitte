@@ -51,14 +51,11 @@ QString toString(git_commit* commit, git_repository* repo)
     return QString("%1 %2").arg(oidstr).arg(git_commit_message(commit));
 }
 
-std::vector<Commit> Git::readCommits() const
+std::vector<Commit> Git::readCommits(const QString& projectPath) const
 {
 
     git_repository *repo = nullptr;
-    //    if (! check_error(git_repository_open(&repo, "/home/sander/fast/programming/cppdreams"))){
-    //    if (! check_error(git_repository_open(&repo, "/home/sanderv/dev/test/git"))){
-//    if (! check_error(git_repository_open(&repo, "/home/sander/fast/programming/testgit"))){
-    if (! check_error(git_repository_open(&repo, "/home/sander/fast/programming/github/conan"))){
+    if (! check_error(git_repository_open(&repo, projectPath.toStdString().c_str()))){
         return {};
     }
 

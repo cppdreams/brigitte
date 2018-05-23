@@ -6,6 +6,8 @@ Item {
 
     // Have to check how to add fallback fonts:
     readonly property string monoFontFamily: "DejaVu Sans Mono"
+
+    readonly property int mediumFontSize: 10
     // 'Courier New', monospace, 'Droid Sans Fallback'
 //    readonly property string monoFontFamily: 'Droid Sans Mono'
 //    readonly property string monoFontFamily: "Ubuntu Mono"

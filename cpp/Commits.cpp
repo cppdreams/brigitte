@@ -1,5 +1,6 @@
 #include "Commits.h"
 
+#include <QDebug>
 
 
 int Commits::getActiveBranchIndex(int row) const
@@ -86,14 +87,34 @@ int FilteredCommits::getActiveBranchIndex(int row) const
     return data(index(row, 0), Commits::ActiveBranchIndexRole).toInt();
 }
 
+namespace
+{
+
+QVector<int> mapListFromSource(const QVector<int>& source, const QSortFilterProxyModel* model)
+{
+    QVector<int> mapped;
+    for (int iparent : source){
+        auto mappedIndex = model->mapFromSource(model->sourceModel()->index(iparent, 0));
+        if (mappedIndex.isValid()){
+            mapped.push_back(mappedIndex.row());
+        }
+    }
+
+    return mapped;
+}
+
+} // namespace
+
 QVector<int> FilteredCommits::getParents(int row) const
 {
-    return data(index(row, 0), Commits::ParentsRole).value<QVector<int>>();
+    return mapListFromSource(data(index(row, 0), Commits::ParentsRole).value<QVector<int>>(),
+                             this);
 }
 
 QVector<int> FilteredCommits::getChildren(int row) const
 {
-    return data(index(row, 0), Commits::ChildrenRole).value<QVector<int>>();
+    return mapListFromSource(data(index(row, 0), Commits::ChildrenRole).value<QVector<int>>(),
+                             this);
 }
 
 bool FilteredCommits::isSelected(int row) const
@@ -103,7 +124,15 @@ bool FilteredCommits::isSelected(int row) const
 
 void FilteredCommits::setSelected(int row, bool selected)
 {
-    sourceModel()->setData(index(row, 0), selected, Commits::SelectionRole);
+    sourceModel()->setData(mapToSource(index(row, 0)), selected, Commits::SelectionRole);
+}
+
+void FilteredCommits::filterOnBranch(int row)
+{
+    m_visible.resize(sourceModel()->rowCount(), 0);
+    m_visible[row] = 1;
+
+    invalidateFilter();
 }
 
 FilteredCommits::FilteredCommits()
@@ -113,7 +142,7 @@ FilteredCommits::FilteredCommits()
 
 bool FilteredCommits::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    return true;
+    return sourceRow >= m_visible.size() || m_visible[sourceRow];
 }
 
 //bool FilteredCommits::lessThan(const QModelIndex &left, const QModelIndex &right) const

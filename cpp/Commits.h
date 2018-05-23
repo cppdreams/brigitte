@@ -52,6 +52,8 @@ public slots:
 
     void         setSelected(int row, bool selected);
 
+    void         filterOnBranch(int row);
+
 public:
     FilteredCommits();
 
@@ -60,4 +62,7 @@ public:
 private:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 //    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+
+private:
+    std::vector<char> m_visible;
 };

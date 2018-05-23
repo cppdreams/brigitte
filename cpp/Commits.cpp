@@ -2,6 +2,10 @@
 
 #include <QDebug>
 
+#include <iostream>
+
+using namespace std;
+
 
 int Commits::getActiveBranchIndex(int row) const
 {
@@ -107,14 +111,12 @@ QVector<int> mapListFromSource(const QVector<int>& source, const QSortFilterProx
 
 QVector<int> FilteredCommits::getParents(int row) const
 {
-    return mapListFromSource(data(index(row, 0), Commits::ParentsRole).value<QVector<int>>(),
-                             this);
+    return mapListFromSource(getParentsRaw(row), this);
 }
 
 QVector<int> FilteredCommits::getChildren(int row) const
 {
-    return mapListFromSource(data(index(row, 0), Commits::ChildrenRole).value<QVector<int>>(),
-                             this);
+    return mapListFromSource(getChildrenRaw(row), this);
 }
 
 bool FilteredCommits::isSelected(int row) const
@@ -129,10 +131,66 @@ void FilteredCommits::setSelected(int row, bool selected)
 
 void FilteredCommits::filterOnBranch(int row)
 {
-    m_visible.resize(sourceModel()->rowCount(), 0);
-    m_visible[row] = 1;
+    m_visible = std::vector<char>(sourceModel()->rowCount(), 0);
 
-    invalidateFilter();
+    m_visible[mapToSource(index(row, 0)).row()] = 1;
+
+    const int branchIndex = getActiveBranchIndex(row);
+
+    auto makeVisible = [this](int sourceIndex){
+        for (int parent : getParentsRaw(sourceIndex)){
+            m_visible[parent] = 1;
+        }
+
+        for (int child : getChildrenRaw(sourceIndex)){
+            m_visible[child] = 1;
+        }
+    };
+
+    int icurrent = row;
+    while (icurrent >= 0){
+        makeVisible(icurrent);
+
+        // Source model indices
+        auto parents = getParentsRaw(icurrent);
+        icurrent = -1;
+
+        for (int parent : parents){
+            if (sourceModel()->data(sourceModel()->index(parent, 0), Commits::ActiveBranchIndexRole) == branchIndex){
+                // Continue if parent is on the same branch
+                icurrent = mapFromSource(sourceModel()->index(parent, 0)).row();
+                break;
+            }
+        }
+    }
+
+    icurrent = row;
+    while (icurrent >= 0){
+        makeVisible(icurrent);
+
+        // Source model indices
+        auto children = getChildrenRaw(icurrent);
+        icurrent = -1;
+
+        for (int child : children){
+            if (sourceModel()->data(sourceModel()->index(child, 0), Commits::ActiveBranchIndexRole) == branchIndex){
+                icurrent = mapFromSource(sourceModel()->index(child, 0)).row();
+                break;
+            }
+        }
+    }
+
+    setSelected(row, false);
+
+    // Call this instead of invalidateFilter because then views can listen to layoutChanged
+    invalidate();
+}
+
+void FilteredCommits::resetFilter()
+{
+    m_visible = std::vector<char>(sourceModel()->rowCount(), 1);
+
+    invalidate();
 }
 
 FilteredCommits::FilteredCommits()
@@ -152,4 +210,14 @@ bool FilteredCommits::filterAcceptsRow(int sourceRow, const QModelIndex &sourceP
 int FilteredCommits::getSelectionRole() const
 {
     return Commits::SelectionRole;
+}
+
+QVector<int> FilteredCommits::getParentsRaw(int row) const
+{
+    return data(index(row, 0), Commits::ParentsRole).value<QVector<int>>();
+}
+
+QVector<int> FilteredCommits::getChildrenRaw(int row) const
+{
+    return data(index(row, 0), Commits::ChildrenRole).value<QVector<int>>();
 }

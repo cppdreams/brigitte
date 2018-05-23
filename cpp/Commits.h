@@ -53,11 +53,15 @@ public slots:
     void         setSelected(int row, bool selected);
 
     void         filterOnBranch(int row);
+    void         resetFilter();
 
 public:
     FilteredCommits();
 
     int getSelectionRole() const;
+
+    QVector<int> getParentsRaw(int row) const;
+    QVector<int> getChildrenRaw(int row) const;
 
 private:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;

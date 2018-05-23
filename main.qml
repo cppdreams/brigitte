@@ -42,6 +42,10 @@ Window {
                         canvas.requestPaint();
                     }
                 }
+
+                onLayoutChanged: {
+                    canvas.requestPaint();
+                }
             }
 
             function getColor(column){
@@ -184,6 +188,15 @@ Window {
                 onContainsMouseChanged: {
                     if (! containsMouse){
                         deselectLast();
+                    }
+                }
+
+                onClicked: {
+                    var icommit = canvas.getCommitIndex(mouse.x);
+                    var branchIndex = canvas.getBranchIndex(mouse.y);
+
+                    if (cpp_commits.getActiveBranchIndex(icommit) === branchIndex){
+                        cpp_commits.filterOnBranch(icommit);
                     }
                 }
             }

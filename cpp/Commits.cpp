@@ -53,6 +53,8 @@ QVariant Commits::data(const QModelIndex &index, int role) const
     case ChildrenRole: return QVariant::fromValue(getChildren(index.row()));
     case ParentsRole: return QVariant::fromValue(getParents(index.row()));
     case SelectionRole: return m_selected[index.row()];
+    case AuthorRole:  return m_commits[index.row()].author.name;
+    case TimeRole: return m_commits[index.row()].time;
     }
 
     return QVariant();
@@ -65,8 +67,10 @@ QHash<int, QByteArray> Commits::roleNames() const
     roles[ShaRole]      = "sha";
     roles[ShortShaRole] = "shortsha";
     roles[MessageRole]  = "message";
-    roles[SelectionRole] = "selected";
     roles[BranchIndexRole] = "branchindex";
+    roles[SelectionRole] = "selected";
+    roles[AuthorRole]   = "author";
+    roles[TimeRole]     = "time";
 
     return roles;
 }

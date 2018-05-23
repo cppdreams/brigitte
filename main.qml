@@ -357,7 +357,7 @@ Window {
                     Row {
                         anchors { fill: parent; leftMargin: 5; rightMargin: 5 }
 
-                        spacing: 2
+                        spacing: 5
 
                         Rectangle {
                             anchors { verticalCenter: parent.verticalCenter }
@@ -369,9 +369,19 @@ Window {
                         }
 
                         Text {
+                            text: shortsha
+                            width: 60
+                            height: parent.height
+                            color: settings.fontColor
+                            verticalAlignment: Text.AlignVCenter
+                            font.family: settings.monoFontFamily
+                            font.pointSize: settings.mediumFontSize
+                        }
+
+                        Text {
                             text: message.split('\n')[0]
                             font.pointSize: settings.mediumFontSize
-                            width: parent.width - 75 - canvas.circleWidth - 4
+                            width: parent.width - 370 - canvas.circleWidth - 20
                             height: parent.height
                             leftPadding: 2
                             clip: true
@@ -380,12 +390,21 @@ Window {
                         }
 
                         Text {
-                            text: shortsha
-                            width: 75
+                            text: author
+                            width: 180
+                            height: parent.height
+                            clip: true
+                            color: settings.fontColor
+                            verticalAlignment: Text.AlignVCenter
+                            font.pointSize: settings.mediumFontSize
+                        }
+
+                        Text {
+                            text: time.toLocaleString(Qt.locale)
+                            width: 130
                             height: parent.height
                             color: settings.fontColor
                             verticalAlignment: Text.AlignVCenter
-                            font.family: settings.monoFontFamily
                             font.pointSize: settings.mediumFontSize
                         }
                     }

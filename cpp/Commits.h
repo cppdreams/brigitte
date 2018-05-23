@@ -30,7 +30,9 @@ public:
         BranchIndexRole,
         ChildrenRole,
         ParentsRole,
-        SelectionRole
+        SelectionRole,
+        AuthorRole,
+        TimeRole
     };
 
 private:

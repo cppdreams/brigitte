@@ -110,9 +110,13 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
             Commit commit;
             commit.sha = oidstr;
             commit.message = git_commit_message(c);
+
+            const git_signature* author = git_commit_author(c);
+            commit.author.name = author->name;
+            commit.time = QDateTime::fromSecsSinceEpoch(git_commit_time(c));
+
             commits.emplace_back(commit);
         }
-
 
         size_t branchIndex = activeBranches.size();
         for (size_t i = 0; i < activeBranches.size();){

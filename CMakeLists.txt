@@ -7,7 +7,7 @@ include(ExternalProject)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
@@ -20,7 +20,7 @@ ExternalProject_Add(yaml-cpp-build
     INSTALL_COMMAND ""
     )
 
-SET(YAML_CPP_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/src/yaml-cpp/include)
+SET(YAML_CPP_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/src/yaml-cpp-build/include)
 SET(YAML_CPP_LIB_DIR     ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/src/yaml-cpp-build-build)
 
 add_library(yaml-cpp SHARED IMPORTED)

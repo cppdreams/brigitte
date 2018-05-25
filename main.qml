@@ -235,6 +235,28 @@ Window {
                     }
                 }
             }
+
+            Column {
+                id: buttonscol
+
+                anchors { right: parent.right; bottom: parent.bottom; bottomMargin: 15 }
+                width: 90
+                height: 45
+                spacing: 5
+
+                Button {
+                    text: "Branches"
+                    width: parent.width
+                    height: 20
+                    onClicked: cpp_commits.filterOnBranching();
+                }
+                Button {
+                    text: "Clear"
+                    width: parent.width
+                    height: 20
+                    onClicked: cpp_commits.resetFilter();
+                }
+            }
         }
 
         //        Row {
@@ -325,7 +347,7 @@ Window {
             id: commits_view
 
             width: parent.width
-            height: parent.height - 300
+            height: parent.height - 300 - 30
             clip: true
             // No phone-style overshooting
             boundsBehavior: Flickable.StopAtBounds
@@ -412,6 +434,26 @@ Window {
                             font.pointSize: settings.mediumFontSize
                         }
                     }
+                }
+            }
+        }
+
+        Rectangle {
+            id: statusbar
+            width: parent.width
+            height: 30
+            color: 'black'
+
+            Row {
+                anchors { fill: parent; leftMargin: 5; rightMargin: 5 }
+
+                Text {
+                    text: commits_view.count + " commits"
+
+                    height: parent.height
+                    font.pointSize: settings.mediumFontSize
+                    color: settings.fontColor
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }

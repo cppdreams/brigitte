@@ -21,7 +21,7 @@ bool check_error(int error)
 {
     if (error < 0) {
         const git_error *e = giterr_last();
-        cout << "Error " << error << "/" << e->klass << ": " << e->message << endl;
+        cerr << "Error " << error << "/" << e->klass << ": " << e->message << endl;
         return false;
     } else {
         return true;
@@ -178,9 +178,6 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
     }
 
     git_revwalk_free(walk);
-
-    cout << commits.size() << " commits" << endl;
-
     git_repository_free(repo);
 
     return commits;

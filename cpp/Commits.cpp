@@ -139,6 +139,25 @@ void FilteredCommits::setSelected(int row, bool selected)
     sourceModel()->setData(mapToSource(index(row, 0)), selected, Commits::SelectionRole);
 }
 
+void FilteredCommits::filterOnBranching()
+{
+    m_visible = std::vector<char>(sourceModel()->rowCount(), 0);
+
+    for (size_t i = 0; i < m_visible.size(); ++i){
+        if (getChildren(i).size() > 1){
+            m_visible[i] = true;
+            makeChildrenVisible(i);
+        }
+
+        if (getParents(i).size() > 1){
+            m_visible[i] = true;
+            makeParentsVisible(i);
+        }
+    }
+
+    invalidate();
+}
+
 void FilteredCommits::filterOnBranch(int row)
 {
     m_visible = std::vector<char>(sourceModel()->rowCount(), 0);
@@ -147,19 +166,9 @@ void FilteredCommits::filterOnBranch(int row)
 
     const int branchIndex = getActiveBranchIndex(row);
 
-    auto makeVisible = [this](int sourceIndex){
-        for (int parent : getSourceParents(sourceIndex)){
-            m_visible[parent] = 1;
-        }
-
-        for (int child : getSourceChildren(sourceIndex)){
-            m_visible[child] = 1;
-        }
-    };
-
     int icurrent = mapToSource(index(row, 0)).row();
     while (icurrent >= 0){
-        makeVisible(icurrent);
+        makeDirectRelationsVisible(icurrent);
 
         // Source model indices
         auto parents = getSourceParents(icurrent);
@@ -176,7 +185,7 @@ void FilteredCommits::filterOnBranch(int row)
 
     icurrent = mapToSource(index(row, 0)).row();
     while (icurrent >= 0){
-        makeVisible(icurrent);
+        makeDirectRelationsVisible(icurrent);
 
         // Source model indices
         auto children = getSourceChildren(icurrent);
@@ -213,6 +222,26 @@ bool FilteredCommits::filterAcceptsRow(int sourceRow, const QModelIndex &sourceP
     return sourceRow >= m_visible.size() || m_visible[sourceRow];
 }
 
+void FilteredCommits::makeDirectRelationsVisible(int sourceRow)
+{
+    makeParentsVisible(sourceRow);
+    makeChildrenVisible(sourceRow);
+}
+
+void FilteredCommits::makeChildrenVisible(int sourceRow)
+{
+    for (int child : getSourceChildren(sourceRow)){
+        m_visible[child] = 1;
+    }
+}
+
+void FilteredCommits::makeParentsVisible(int sourceRow)
+{
+    for (int parent : getSourceParents(sourceRow)){
+        m_visible[parent] = 1;
+    }
+}
+
 //bool FilteredCommits::lessThan(const QModelIndex &left, const QModelIndex &right) const
 //{
 //}
@@ -222,14 +251,14 @@ int FilteredCommits::getSelectionRole() const
     return Commits::SelectionRole;
 }
 
-QVector<int> FilteredCommits::getSourceParents(int row) const
+QVector<int> FilteredCommits::getSourceParents(int sourceRow) const
 {
-    return sourceModel()->data(sourceModel()->index(row, 0),
+    return sourceModel()->data(sourceModel()->index(sourceRow, 0),
                                Commits::ParentsRole).value<QVector<int>>();
 }
 
-QVector<int> FilteredCommits::getSourceChildren(int row) const
+QVector<int> FilteredCommits::getSourceChildren(int sourceRow) const
 {
-    return sourceModel()->data(sourceModel()->index(row, 0),
+    return sourceModel()->data(sourceModel()->index(sourceRow, 0),
                                Commits::ChildrenRole).value<QVector<int>>();
 }

@@ -57,6 +57,16 @@ public slots:
 
     void         setSelected(int row, bool selected);
 
+    /**
+        Show only nodes that have multiple parents and/or children, and those
+        parents/children
+    */
+\
+    void         filterOnBranching();
+    /**
+        Show only commits that belong to the branch the commit with index 'row'
+        is in, + direct parents/children.
+    */
     void         filterOnBranch(int row);
     void         resetFilter();
 
@@ -65,12 +75,19 @@ public:
 
     int getSelectionRole() const;
 
-    QVector<int> getSourceParents(int row) const;
-    QVector<int> getSourceChildren(int row) const;
+    QVector<int> getSourceParents(int sourceRow) const;
+    QVector<int> getSourceChildren(int sourceRow) const;
 
 private:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 //    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+
+    /**
+        Make parents and children visible
+    */
+    void makeDirectRelationsVisible(int sourceRow);
+    void makeChildrenVisible(int sourceRow);
+    void makeParentsVisible(int sourceRow);
 
 private:
     std::vector<char> m_visible;

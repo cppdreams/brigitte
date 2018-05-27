@@ -32,7 +32,7 @@ public:
     Git();
     ~Git();
 
-    std::vector<Commit> readCommits(const QString& projectPath) const;
+    std::vector<Commit> readCommits(const QString& projectPath, int maxCommits=0) const;
 
     Git(const Git& rhs) = delete;
     Git& operator=(const Git& rhs) = delete;

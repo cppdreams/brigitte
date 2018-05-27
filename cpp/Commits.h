@@ -15,7 +15,7 @@ public slots:
     QVector<int> getParents(int row) const;
     QVector<int> getChildren(int row) const;
 
-    void loadFrom(QString path);
+    void loadFrom(QString path, int maxCommits);
 
 public:
     void reset(std::vector<Commit> commits);

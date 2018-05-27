@@ -22,9 +22,9 @@ QVector<int> Commits::getChildren(int row) const
     return m_commits[row].children;
 }
 
-void Commits::loadFrom(QString path)
+void Commits::loadFrom(QString path, int maxCommits)
 {
-    reset(m_git.readCommits(path));
+    reset(m_git.readCommits(path, maxCommits));
 }
 
 void Commits::reset(std::vector<Commit> commits)

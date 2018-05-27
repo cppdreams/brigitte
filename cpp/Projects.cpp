@@ -28,6 +28,7 @@ QVariant ProjectList::data(const QModelIndex &index, int role) const
     switch(role){
     case NameRole: return m_projects[index.row()].name;
     case PathRole: return m_projects[index.row()].path;
+    case MaxCommitsRole: return m_projects[index.row()].maxCommits;
     }
 
     return QVariant();
@@ -39,6 +40,7 @@ QHash<int, QByteArray> ProjectList::roleNames() const
 
     roles[NameRole] = "projectname";
     roles[PathRole] = "path";
+    roles[MaxCommitsRole] = "max_commits";
 
     return roles;
 }

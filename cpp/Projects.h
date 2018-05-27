@@ -7,6 +7,8 @@ struct Project
 {
     QString name;
     QString path;
+    /// Max number of commits to read from the repo, 0 for unused
+    int     maxCommits = 0;
 };
 
 class ProjectList : public QAbstractListModel
@@ -22,7 +24,8 @@ private:
     enum RoleNames
     {
         NameRole,
-        PathRole
+        PathRole,
+        MaxCommitsRole
     };
 
 private:

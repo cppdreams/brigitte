@@ -50,7 +50,7 @@ Item {
             }
 
             onPressed: {
-                cpp_allcommits.loadFrom(path);
+                cpp_allcommits.loadFrom(path, max_commits);
                 // Temporary hack!
                 root.visible = false;
             }

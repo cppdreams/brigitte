@@ -51,9 +51,8 @@ QString toString(git_commit* commit, git_repository* repo)
     return QString("%1 %2").arg(oidstr).arg(git_commit_message(commit));
 }
 
-std::vector<Commit> Git::readCommits(const QString& projectPath) const
+std::vector<Commit> Git::readCommits(const QString& projectPath, int maxCommits) const
 {
-
     git_repository *repo = nullptr;
     if (! check_error(git_repository_open(&repo, projectPath.toStdString().c_str()))){
         return {};
@@ -92,6 +91,8 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
     vector<Commit> commits;
     vector<LastCommitData> activeBranches;
 
+    // Note: on huge repos (e.g. linux kernel) the first call to git_revwalk_next takes
+    // long (order of 5 seconds)
     while (git_revwalk_next(&oid, walk) == 0) {
         git_commit *c;
         if (! check_error(git_commit_lookup(&c, repo, &oid))){
@@ -175,6 +176,10 @@ std::vector<Commit> Git::readCommits(const QString& projectPath) const
         }
 
         git_commit_free(c);
+
+        if (maxCommits > 0 && commits.size() >= maxCommits){
+            break;
+        }
     }
 
     git_revwalk_free(walk);

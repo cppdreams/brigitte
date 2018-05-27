@@ -80,14 +80,20 @@ Window {
                         text: "Branch/Merge"
                         width: parent.width
                         height: 20
-                        onClicked: cpp_commits.filterOnBranching();
+                        onClicked: {
+                            cpp_commits.filterOnBranching();
+                            searchfield.clear();
+                        }
                     }
                     Button {
                         text: "All"
                         width: parent.width
                         height: 20
-                        onClicked: cpp_commits.resetFilter();
-                    }
+                        onClicked: {
+                            cpp_commits.resetFilter();
+                            searchfield.clear();
+                        }
+                    }                    
                 }
             }
 
@@ -134,21 +140,6 @@ Window {
 
                         spacing: 5
 
-                        // TextInput to allow selecting
-                        TextInput {
-                            text: shortsha
-                            width: 60
-                            height: parent.height
-
-                            readOnly: true
-                            selectByMouse: true
-
-                            color: settings.fontColor
-                            verticalAlignment: Text.AlignVCenter
-                            font.family: settings.monoFontFamily
-                            font.pointSize: settings.mediumFontSize
-                        }
-
                         Text {
                             text: message.split('\n')[0]
                             font.pointSize: settings.mediumFontSize
@@ -178,6 +169,21 @@ Window {
                             verticalAlignment: Text.AlignVCenter
                             font.pointSize: settings.mediumFontSize
                         }
+
+                        // TextInput to allow selecting
+                        TextInput {
+                            text: shortsha
+                            width: 60
+                            height: parent.height
+
+                            readOnly: true
+                            selectByMouse: true
+
+                            color: settings.fontColor
+                            verticalAlignment: Text.AlignVCenter
+                            font.family: settings.monoFontFamily
+                            font.pointSize: settings.mediumFontSize
+                        }
                     }
                 }
             }
@@ -191,6 +197,24 @@ Window {
 
             Row {
                 anchors { fill: parent; leftMargin: 5; rightMargin: 5 }
+                spacing: 5
+
+                TextField {
+                    id: searchfield
+
+                    function clear(){
+                        text = "";
+                    }
+
+                    placeholderText: "<Search>"
+                    width: 295
+                    height: parent.height - 4
+                    anchors { verticalCenter: parent.verticalCenter }
+
+                    onTextChanged: {
+                        cpp_commits.search(text);
+                    }
+                }
 
                 Text {
                     text: commits_view.count + " commits"

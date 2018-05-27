@@ -141,34 +141,41 @@ void FilteredCommits::setSelected(int row, bool selected)
 
 void FilteredCommits::filterOnBranching()
 {
-    m_visible = std::vector<char>(sourceModel()->rowCount(), 0);
+    m_filters.clear();
 
-    for (size_t i = 0; i < m_visible.size(); ++i){
-        if (getChildren(i).size() > 1){
-            m_visible[i] = true;
-            makeChildrenVisible(i);
+    Filter filter{Filter::Type::Git,
+                vector<char>(sourceModel()->rowCount(), 0)};
+
+    for (size_t i = 0; i < filter.visible.size(); ++i){
+        if (getSourceChildren(i).size() > 1){
+            filter.visible[i] = true;
+            makeChildrenVisible(i, filter);
         }
 
-        if (getParents(i).size() > 1){
-            m_visible[i] = true;
-            makeParentsVisible(i);
+        if (getSourceParents(i).size() > 1){
+            filter.visible[i] = true;
+            makeParentsVisible(i, filter);
         }
     }
 
+    m_filters.emplace_back(move(filter));
     invalidate();
 }
 
 void FilteredCommits::filterOnBranch(int row)
 {
-    m_visible = std::vector<char>(sourceModel()->rowCount(), 0);
+    m_filters.clear();
 
-    m_visible[mapToSource(index(row, 0)).row()] = 1;
+    Filter filter{Filter::Type::Git,
+                 vector<char>(sourceModel()->rowCount(), 0)};
+
+    filter.visible[mapToSource(index(row, 0)).row()] = 1;
 
     const int branchIndex = getActiveBranchIndex(row);
 
     int icurrent = mapToSource(index(row, 0)).row();
     while (icurrent >= 0){
-        makeDirectRelationsVisible(icurrent);
+        makeDirectRelationsVisible(icurrent, filter);
 
         // Source model indices
         auto parents = getSourceParents(icurrent);
@@ -185,7 +192,7 @@ void FilteredCommits::filterOnBranch(int row)
 
     icurrent = mapToSource(index(row, 0)).row();
     while (icurrent >= 0){
-        makeDirectRelationsVisible(icurrent);
+        makeDirectRelationsVisible(icurrent, filter);
 
         // Source model indices
         auto children = getSourceChildren(icurrent);
@@ -202,43 +209,85 @@ void FilteredCommits::filterOnBranch(int row)
     setSelected(row, false);
 
     // Call this instead of invalidateFilter because then views can listen to layoutChanged
+    m_filters.emplace_back(move(filter));
     invalidate();
 }
 
 void FilteredCommits::resetFilter()
 {
-    m_visible = std::vector<char>(sourceModel()->rowCount(), 1);
+    m_filters.clear();
+    invalidate();
+}
+
+void FilteredCommits::search(QString searchString)
+{
+    // We are replacing the previous search filter. Because of this we cannot rely on the
+    // rowCount of this object, it is inaccurate until the filtering is reprocessed, which we
+    // delay until the end of this function
+    if (! m_filters.empty() && m_filters.back().type == Filter::Type::Search){
+        m_filters.pop_back();
+    }
+
+    // empty search string: clears out previous search filter, if present
+    if (! searchString.isEmpty()){
+        Filter filter{Filter::Type::Search,
+                    vector<char>(sourceModel()->rowCount(), 0)};
+
+        for (int i = 0; i < m_commits->rowCount(QModelIndex()); ++i){
+            // Manually apply filtering
+            if (! m_filters.empty() && ! m_filters.back().visible[i]){
+                continue;
+            }
+
+            bool visible = false;
+
+            // If bottle-neck: get data directly
+            if (   m_commits->data(m_commits->index(i, 0), Commits::MessageRole).toString().contains(searchString)
+                || m_commits->data(m_commits->index(i, 0), Commits::AuthorRole).toString().contains(searchString))
+            {
+                visible = true;
+            }
+
+            filter.visible[i] = visible;
+        }
+
+        m_filters.emplace_back(move(filter));
+    }
 
     invalidate();
 }
 
-FilteredCommits::FilteredCommits()
+FilteredCommits::FilteredCommits(Commits* commits)
     : QSortFilterProxyModel ()
+    , m_commits(commits)
 {
+    setSourceModel(commits);
 }
 
 bool FilteredCommits::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    return sourceRow >= m_visible.size() || m_visible[sourceRow];
+    return m_filters.empty()
+            || sourceRow >= m_filters.back().visible.size()
+            || m_filters.back().visible[sourceRow];
 }
 
-void FilteredCommits::makeDirectRelationsVisible(int sourceRow)
+void FilteredCommits::makeDirectRelationsVisible(int sourceRow, Filter& filter)
 {
-    makeParentsVisible(sourceRow);
-    makeChildrenVisible(sourceRow);
+    makeParentsVisible(sourceRow, filter);
+    makeChildrenVisible(sourceRow, filter);
 }
 
-void FilteredCommits::makeChildrenVisible(int sourceRow)
+void FilteredCommits::makeChildrenVisible(int sourceRow, Filter& filter)
 {
     for (int child : getSourceChildren(sourceRow)){
-        m_visible[child] = 1;
+        filter.visible[child] = 1;
     }
 }
 
-void FilteredCommits::makeParentsVisible(int sourceRow)
+void FilteredCommits::makeParentsVisible(int sourceRow, Filter& filter)
 {
     for (int parent : getSourceParents(sourceRow)){
-        m_visible[parent] = 1;
+        filter.visible[parent] = 1;
     }
 }
 

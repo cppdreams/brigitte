@@ -18,8 +18,7 @@ int main(int argc, char *argv[])
 
     Commits commits;
 
-    FilteredCommits filteredCommits;
-    filteredCommits.setSourceModel(&commits);
+    FilteredCommits filteredCommits(&commits);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

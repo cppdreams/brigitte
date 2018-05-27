@@ -61,7 +61,6 @@ public slots:
         Show only nodes that have multiple parents and/or children, and those
         parents/children
     */
-\
     void         filterOnBranching();
     /**
         Show only commits that belong to the branch the commit with index 'row'
@@ -69,14 +68,32 @@ public slots:
     */
     void         filterOnBranch(int row);
     void         resetFilter();
+    void         search(QString searchString);
 
 public:
-    FilteredCommits();
+    /**
+        Take Commits as argument to get access to unfiltered data without having
+        to cast SourceModel
+    */
+    FilteredCommits(Commits* commits);
 
     int getSelectionRole() const;
 
     QVector<int> getSourceParents(int sourceRow) const;
     QVector<int> getSourceChildren(int sourceRow) const;
+
+private:
+    struct Filter
+    {
+        enum class Type
+        {
+            Search,
+            Git
+        };
+
+        Type type;
+        std::vector<char> visible;
+    };
 
 private:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
@@ -85,10 +102,11 @@ private:
     /**
         Make parents and children visible
     */
-    void makeDirectRelationsVisible(int sourceRow);
-    void makeChildrenVisible(int sourceRow);
-    void makeParentsVisible(int sourceRow);
+    void makeDirectRelationsVisible(int sourceRow, Filter &filter);
+    void makeChildrenVisible(int sourceRow, Filter &filter);
+    void makeParentsVisible(int sourceRow, Filter &filter);
 
 private:
-    std::vector<char> m_visible;
+    Commits* m_commits;
+    std::vector<Filter> m_filters;
 };

@@ -28,24 +28,44 @@ Item {
                                                 : 'transparent'
             }
 
-            Row {
+            Column {
                 anchors { fill: parent; leftMargin: 5; rightMargin: 5 }
-                spacing: 5
 
-                Text {
-                    text:  projectname
-                    width: 100
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
-                    color: settings.fontColor
+                Row {
+                    width: parent.width
+                    height: 20
+                    spacing: 5
+
+                    Text {
+                        text:  projectname
+                        width: 100
+                        height: parent.height
+                        verticalAlignment: Text.AlignVCenter
+                        color: settings.fontColor
+                        font.pointSize: settings.largeFontSize
+                    }
+
+                    Text {
+                        text:  path
+                        width: parent.width - 100 - 15
+                        height: parent.height
+                        verticalAlignment: Text.AlignVCenter
+                        color: settings.fontColor
+                    }
                 }
 
-                Text {
-                    text:  path
-                    width: parent.width - 100 - 15
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
-                    color: settings.fontColor
+                Row {
+                    width: parent.width
+                    height: 20
+
+                    Text {
+                        leftPadding: 100
+                        visible: max_commits > 0
+                        text: "Read max " + max_commits + " commits"
+                        font.italic: true
+                        color: settings.grayedFontColor
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
 

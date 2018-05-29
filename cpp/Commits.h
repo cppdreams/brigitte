@@ -16,6 +16,7 @@ public slots:
     QVector<int> getChildren(int row) const;
 
     void loadFrom(QString path, int maxCommits);
+    void refresh();
 
 public:
     void reset(std::vector<Commit> commits);
@@ -39,6 +40,10 @@ public:
 
 private:
     Git m_git;
+
+    QString m_path;
+    int     m_maxCommits = 0;
+
     std::vector<char>   m_selected;
     std::vector<Commit> m_commits;
 };

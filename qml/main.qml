@@ -103,6 +103,7 @@ Window {
                 width: parent.width - 300
                 height: parent.height
                 clip: true
+                focus: true
                 // No phone-style overshooting
                 boundsBehavior: Flickable.StopAtBounds
 
@@ -114,6 +115,13 @@ Window {
 
                 model:    cpp_commits
                 delegate: commit
+
+                Keys.onPressed: {
+                    if (event.key === Qt.Key_F5) {
+                        cpp_allcommits.refresh();
+                        event.accepted = true;
+                    }
+                }
             }
         }
 

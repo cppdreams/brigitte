@@ -63,7 +63,7 @@ Window {
             GitTree {
                 id: canvas
 
-                width: 300
+                width: 150
                 height: parent.height
                 horizontal: false
                 rowHeight: root.rowHeight
@@ -100,7 +100,7 @@ Window {
             ListView {
                 id: commits_view
 
-                width: parent.width - 300
+                width: parent.width - 150
                 height: parent.height
                 clip: true
                 focus: true
